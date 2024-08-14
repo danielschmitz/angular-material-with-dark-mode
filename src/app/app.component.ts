@@ -1,6 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe } from '@angular/common';
-import { Component, HostBinding, inject } from '@angular/core';
+import { Component, HostBinding, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,12 +27,20 @@ import { Observable, map, shareReplay } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
 
   @HostBinding('class')
   currentTheme: 'light-theme' | 'dark-theme' = 'light-theme';
   isDarkMode: boolean = false;
+
+  ngOnInit(): void {
+    this.currentTheme =
+      localStorage.getItem('theme') == 'dark-theme'
+        ? 'dark-theme'
+        : 'light-theme';
+    this.isDarkMode = this.currentTheme == 'dark-theme';
+  }
 
   onThemeChanged() {
     this.isDarkMode = !this.isDarkMode;
@@ -41,6 +49,7 @@ export class AppComponent {
     } else {
       this.currentTheme = 'light-theme';
     }
+    localStorage.setItem('theme', this.currentTheme);
   }
 
   isHandset$: Observable<boolean> = this.breakpointObserver
